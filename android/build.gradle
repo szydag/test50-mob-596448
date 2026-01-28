@@ -1,26 +1,26 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+/*
+ * This is the top-level build file where you can add configuration options common to all sub-projects/modules.
+ * The following content represents a typical React Native project's android/build.gradle file.
+ * The fix addresses the missing 'com.facebook.react:react-native' dependency by ensuring all required Maven repositories are correctly configured.
+ */
 
 buildscript {
     ext {
-        // Define key versions for consistency across the project
-        // Update these to match the latest recommendations for your React Native version.
-        // AGP 8.2.0 is compatible with Gradle 8.x and supports compileSdk 34.
-        buildToolsVersion = "34.0.0"
-        minSdkVersion = 24 // React Native 0.70+ generally recommends 23+, 24 is a safe bet.
-        compileSdkVersion = 34 // Android 14 (API 34)
-        targetSdkVersion = 34 // Android 14 (API 34)
-        // Kotlin Gradle plugin version, compatible with AGP 8.x
-        kotlinVersion = "1.9.21"
+        // Define common versions here. Adjust these values if your project requires different versions.
+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
+        minSdkVersion = findProperty('android.minSdkVersion') ?: 21
+        compileSdkVersion = findProperty('android.compileSdkVersion') ?: 34
+        targetSdkVersion = findProperty('android.targetSdkVersion') ?: 34
+        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.0' // Ensure a compatible Kotlin version, e.g., '1.9.0' for newer RN
+        gradlePluginVersion = findProperty('android.gradlePluginVersion') ?: '8.2.1' // Ensure a compatible Android Gradle Plugin version
     }
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        // Update Android Gradle Plugin (AGP) version
-        classpath("com.android.tools.build:gradle:8.2.0")
-        // Update Kotlin Gradle Plugin version
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath("com.android.tools.build:gradle:$gradlePluginVersion")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion") // Required for Kotlin-based projects/modules
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -28,15 +28,18 @@ buildscript {
 
 allprojects {
     repositories {
-        // React Native requires these specific local Maven repositories for its native modules
-        maven { url(new File([rootDir].join('/node_modules/react-native/android'))) }
-        maven { url(new File([rootDir].join('/node_modules/@react-native/gradle-plugin/'))) } // For newer RN versions
-        maven { url "https://www.jitpack.io" }
-        google()
-        mavenCentral()
+        // START FIX: Ensure these repositories are declared for all sub-projects.
+        // The `com.facebook.react:react-native` artifact is published to Maven Central
+        // and/or made available locally via node_modules.
+        google()          // Google's Maven repository for AndroidX libraries and other Google artifacts
+        mavenCentral()    // Maven Central repository, where many open-source libraries are published, including React Native artifacts
+        maven { url "$rootDir/../node_modules/react-native/android" } // Essential for local React Native Android artifacts
+        maven { url "https://www.jitpack.io" } // Often required by various community React Native modules
+        // END FIX
     }
 }
 
-task clean(type: Delete) {
+// Task to clean the build directory
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
