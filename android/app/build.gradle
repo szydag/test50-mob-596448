@@ -1,44 +1,68 @@
-apply plugin: "com.android.application"
-apply plugin: "com.facebook.react"
+apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    namespace "com.appforge.test50"
-    compileSdk 33
+    // Referencing SDK versions defined in the project-level build.gradle
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.appforge.test50"
-        minSdk 21
-        targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        applicationId "com.yourprojectname" // Replace with your actual application ID
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1 // Increment this for each release
+        versionName "1.0" // Update with your app version
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // Required for some native modules or newer Android versions
+        ndk {
+            abiFilters "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
+        }
     }
-
     signingConfigs {
-        release {
-            storeFile file('release.keystore')
+        debug {
+            storeFile file('debug.keystore')
             storePassword 'android'
-            keyAlias 'key0'
+            keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-    }
-
-    buildTypes {
         release {
-            signingConfig signingConfigs.release
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            // Add your release signing configuration here.
+            // storeFile file('myreleasekey.keystore')
+            // storePassword 'my_store_password'
+            // keyAlias 'my_key_alias'
+            // keyPassword 'my_key_password'
         }
     }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.debug // Change to signingConfigs.release for actual release builds
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    // Ensure Java 17 compatibility for Android Gradle Plugin 8.x
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    namespace 'com.yourprojectname' // Add your application's namespace, typically matches applicationId
 }
 
 dependencies {
-    implementation("com.facebook.react:react-android")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
-    
-    if (hermesEnabled.toBoolean()) {
-        implementation("com.facebook.react:hermes-android")
-    } else {
-        implementation jscFlavor
-    }
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    // Default React Native dependencies
+    implementation "com.facebook.react:react-native:+" // From node_modules
+
+    // Add your other dependencies here, e.g.:
+    // implementation 'androidx.appcompat:appcompat:1.6.1'
+    // implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    // testImplementation 'junit:junit:4.13.2'
+    // androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    // androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
