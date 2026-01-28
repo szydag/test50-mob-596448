@@ -1,25 +1,22 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     ext {
-        // The following versions are common for recent React Native projects. Adjust if your project explicitly uses different versions.
         minSdkVersion = 21
-        compileSdkVersion = 34 // Often linked to targetSdkVersion and your RN version
-        targetSdkVersion = 34 // Often linked to compileSdkVersion and your RN version
-        kotlin_version = "1.8.0" // Common Kotlin version. Verify if your project uses a different one.
-        // IMPORTANT: KEEP ALL OTHER EXISTING 'ext' VARIABLES HERE FROM YOUR ORIGINAL FILE
+        compileSdkVersion = 33
+        targetSdkVersion = 33
+        buildToolsVersion = "33.0.0" // This line was explicitly added to resolve the MissingPropertyException.
+        kotlinVersion = "1.8.0" // Ensure this matches your project's Kotlin version, e.g., "1.9.0"
+        // Other properties like flutter.minSdkVersion might be here if applicable
     }
     repositories {
         google()
         mavenCentral()
-        // If 'jcenter()' is present in your original file, it is deprecated and should be removed.
     }
     dependencies {
-        // Ensure your Android Gradle Plugin version is compatible with your Gradle version (Gradle 8.3 was used in logs).
-        // For Gradle 8.x, a common version is 8.2.x or 8.3.x
-        classpath("com.android.tools.build:gradle:8.2.2") // Adjust this to your specific Android Gradle Plugin version
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}")
-        // IMPORTANT: KEEP ALL OTHER EXISTING 'buildscript' DEPENDENCIES HERE FROM YOUR ORIGINAL FILE
+        // Ensure your Android Gradle Plugin (AGP) version is compatible with your Gradle version.
+        // Gradle 8.3 typically works well with AGP 8.2.0 or newer.
+        classpath("com.android.tools.build:gradle:8.2.0")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${project.ext.kotlinVersion}")
     }
 }
 
@@ -27,13 +24,12 @@ allprojects {
     repositories {
         mavenCentral()
         google()
-        // For older React Native versions (e.g., < 0.60) or specific setups, you might need:
-        // maven { url "$rootDir/../node_modules/react-native/android" }
-        // For React Native 0.70+ or specific modules (especially those published by React Native core), you might need:
-        // maven { url "https://maven.pkg.github.com/react-native/oss-releases" }
-        // If you use libraries that publish to JitPack, you might need:
-        // maven { url "https://www.jitpack.io" }
-        // If 'jcenter()' is present in your original file, it is deprecated and should be removed.
+        maven { url("$rootDir/../node_modules/react-native/android") }
+        // If you are using the JavaScriptCore engine, this repository might be needed.
+        // For Hermes, it's usually not required.
+        // maven { url("$rootDir/../node_modules/jsc-android/dist") }
+        // Add other necessary repositories for third-party native modules here, e.g.:
+        // maven { url 'https://www.jitpack.io' }
     }
 }
 
