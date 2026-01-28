@@ -1,45 +1,42 @@
-/*
- * This is the top-level build file where you can add configuration options common to all sub-projects/modules.
- * The following content represents a typical React Native project's android/build.gradle file.
- * The fix addresses the missing 'com.facebook.react:react-native' dependency by ensuring all required Maven repositories are correctly configured.
- */
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     ext {
-        // Define common versions here. Adjust these values if your project requires different versions.
-        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
-        minSdkVersion = findProperty('android.minSdkVersion') ?: 21
-        compileSdkVersion = findProperty('android.compileSdkVersion') ?: 34
-        targetSdkVersion = findProperty('android.targetSdkVersion') ?: 34
-        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.0' // Ensure a compatible Kotlin version, e.g., '1.9.0' for newer RN
-        gradlePluginVersion = findProperty('android.gradlePluginVersion') ?: '8.2.1' // Ensure a compatible Android Gradle Plugin version
+        // The following versions are common for recent React Native projects. Adjust if your project explicitly uses different versions.
+        minSdkVersion = 21
+        compileSdkVersion = 34 // Often linked to targetSdkVersion and your RN version
+        targetSdkVersion = 34 // Often linked to compileSdkVersion and your RN version
+        kotlin_version = "1.8.0" // Common Kotlin version. Verify if your project uses a different one.
+        // IMPORTANT: KEEP ALL OTHER EXISTING 'ext' VARIABLES HERE FROM YOUR ORIGINAL FILE
     }
     repositories {
         google()
         mavenCentral()
+        // If 'jcenter()' is present in your original file, it is deprecated and should be removed.
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:$gradlePluginVersion")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion") // Required for Kotlin-based projects/modules
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        // Ensure your Android Gradle Plugin version is compatible with your Gradle version (Gradle 8.3 was used in logs).
+        // For Gradle 8.x, a common version is 8.2.x or 8.3.x
+        classpath("com.android.tools.build:gradle:8.2.2") // Adjust this to your specific Android Gradle Plugin version
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}")
+        // IMPORTANT: KEEP ALL OTHER EXISTING 'buildscript' DEPENDENCIES HERE FROM YOUR ORIGINAL FILE
     }
 }
 
 allprojects {
     repositories {
-        // START FIX: Ensure these repositories are declared for all sub-projects.
-        // The `com.facebook.react:react-native` artifact is published to Maven Central
-        // and/or made available locally via node_modules.
-        google()          // Google's Maven repository for AndroidX libraries and other Google artifacts
-        mavenCentral()    // Maven Central repository, where many open-source libraries are published, including React Native artifacts
-        maven { url "$rootDir/../node_modules/react-native/android" } // Essential for local React Native Android artifacts
-        maven { url "https://www.jitpack.io" } // Often required by various community React Native modules
-        // END FIX
+        mavenCentral()
+        google()
+        // For older React Native versions (e.g., < 0.60) or specific setups, you might need:
+        // maven { url "$rootDir/../node_modules/react-native/android" }
+        // For React Native 0.70+ or specific modules (especially those published by React Native core), you might need:
+        // maven { url "https://maven.pkg.github.com/react-native/oss-releases" }
+        // If you use libraries that publish to JitPack, you might need:
+        // maven { url "https://www.jitpack.io" }
+        // If 'jcenter()' is present in your original file, it is deprecated and should be removed.
     }
 }
 
-// Task to clean the build directory
-tasks.register('clean', Delete) {
+tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
