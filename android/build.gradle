@@ -1,35 +1,33 @@
 buildscript {
     ext {
-        buildToolsVersion = "33.0.0"
         minSdkVersion = 21
-        compileSdkVersion = 33
-        targetSdkVersion = 33
-        ndkVersion = "23.1.7779620"
-        kotlinVersion = "1.9.0"
+        compileSdkVersion = 34 // Recommended for modern AGP and React Native versions
+        targetSdkVersion = 34 // Recommended for modern AGP and React Native versions
+        ndkVersion = "25.1.8749448" // Adjust if your project specifies a different NDK version
+
+        // Update Kotlin Gradle Plugin version for compatibility with Gradle 8.3 and AGP 8.1.0
+        kotlinVersion = "1.8.0"
+        // Update Android Gradle Plugin (AGP) version for compatibility with Gradle 8.3
+        androidGradlePluginVersion = "8.1.0"
     }
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.1.1")
+        classpath("com.android.tools.build:gradle:${androidGradlePluginVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     }
 }
 
 allprojects {
     repositories {
-        google()
         mavenCentral()
-        maven { url 'https://www.jitpack.io' }
-    }
-    // Fix for Kotlin incompatible version error in CI (Gradle 8.3 vs Kotlin 1.7 metadata)
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-        kotlinOptions {
-            freeCompilerArgs += [
-                "-Xskip-metadata-version-check"
-            ]
+        maven { url "https://www.jitpack.io" }
+        maven { // This is specific to JSC and might not be needed for all projects
+            url("$rootDir/../node_modules/jsc-android/dist")
         }
+        google()
     }
 }
